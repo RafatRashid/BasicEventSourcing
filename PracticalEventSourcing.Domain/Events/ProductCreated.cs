@@ -1,14 +1,9 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using PracticalEventSourcing.Core.EventStoreAccessors;
 using PracticalEventSourcing.Core.ReadModels;
 using PracticalEventSourcing.Core.Repositories;
-using PracticalEventSourcing.Domain.Aggregates;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,48 +15,61 @@ namespace PracticalEventSourcing.Domain.Events
         public int AvailableQuantity { get; set; }
 
 
+        public ProductCreated(EventStore @event)
+        {
+            EventId = @event.Id;
+            AggregateId = @event.AggregateId;
+            Version = @event.Version;
+            EventType = @event.EventType;
+
+            dynamic payload = JsonConvert.DeserializeObject(@event.Payload);
+            ProductName = (string)payload.ProductName;
+            AvailableQuantity = (int)payload.AvailableQuantity;
+        }
         public ProductCreated(Guid productId, string productName, int availableQuantity)
         {
             EventId = Guid.NewGuid();
+            EventType = typeof(ProductCreated).Name;
             AggregateId = productId;
             ProductName = productName;
             AvailableQuantity = availableQuantity;
         }
 
+    }
 
-        internal class ProductCreatedHandler : INotificationHandler<ProductCreated>
+
+    public class ProductCreatedHandler : INotificationHandler<ProductCreated>
+    {
+        IEventRepository _eventRepository;
+        ICommandRepository<ProductRM> _repository;
+        public ProductCreatedHandler(IEventRepository eventRepo, ICommandRepository<ProductRM> repository)
         {
-            IEventRepository _eventRepository;
-            ICommandRepository<ProductRM> _repository;
-            public ProductCreatedHandler(IEventRepository eventRepo, ICommandRepository<ProductRM> repository)
+            _eventRepository = eventRepo;
+            _repository = repository;
+        }
+
+        public async Task Handle(ProductCreated @event, CancellationToken cancellationToken)
+        {
+            try
             {
-                _eventRepository = eventRepo;
-                _repository = repository;
+                @event.Payload = JsonConvert.SerializeObject(new
+                {
+                    @event.ProductName,
+                    @event.AvailableQuantity
+                });
+                await _eventRepository.PersistAsync(@event);
+
+                var newProduct = new ProductRM()
+                {
+                    Id = @event.AggregateId,
+                    Name = @event.ProductName,
+                    AvailableQuantity = @event.AvailableQuantity
+                };
+                await _repository.InsertAsync(newProduct);
             }
-
-            public async Task Handle(ProductCreated @event, CancellationToken cancellationToken)
+            catch (Exception ex)
             {
-                try
-                {
-                    @event.Payload = JsonSerializer.Serialize(new
-                    {
-                        @event.ProductName,
-                        @event.AvailableQuantity
-                    });
-                    await _eventRepository.PersistAsync(@event);
-
-                    var newProduct = new ProductRM()
-                    {
-                        Id = @event.AggregateId,
-                        Name = @event.ProductName,
-                        AvailableQuantity = @event.AvailableQuantity
-                    };
-                    _repository.InsertAsync(newProduct);
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                Console.WriteLine(ex.Message);
             }
         }
     }

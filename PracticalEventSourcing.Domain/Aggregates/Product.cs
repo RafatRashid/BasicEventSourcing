@@ -18,8 +18,13 @@ namespace PracticalEventSourcing.Domain.Aggregates
             AddEvent(productCreated);
         }
 
+        internal void ChangeQuantity(int quantity)
+        {
+            var quantityChanged = new ProductQuantityChanged(this.AggregateId, quantity);
+            AddEvent(quantityChanged);
+        }
 
-        protected override void ApplyEvent(IEvent @event)
+        public override void ApplyEvent(IEvent @event)
         {
             switch(@event)
             {

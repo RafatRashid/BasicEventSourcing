@@ -1,6 +1,10 @@
-﻿using PracticalEventSourcing.Domain.Events;
+﻿using Microsoft.EntityFrameworkCore;
+using PracticalEventSourcing.Domain.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,7 +39,8 @@ namespace PracticalEventSourcing.Core.EventStoreAccessors
                     AggregateId = @event.AggregateId,
                     Payload = @event.Payload,
                     Timestamp = DateTime.Now,
-                    Version = @event.Version
+                    Version = @event.Version,
+                    EventType = @event.EventType
                 };
 
                 await _context.EventStore.AddAsync(ev);
@@ -54,10 +59,25 @@ namespace PracticalEventSourcing.Core.EventStoreAccessors
         /// to read the events to get the final state of any aggregate for further operation on it.
         /// </summary>
         /// <param name="aggregateId"></param>
-        public void Rehydrate(Guid aggregateId)
+        public async Task<T> RehydrateAsync<T>(Guid aggregateId) where T : AggregateRoot, new()
         {
-            // read events from the first event or from a latest snapshot
-            // and regenerate the current state of an aggregate and return the aggregate
+            // read events from the first event (or from a latest snapshot in a future update)
+            var events = await _context.EventStore.Where(x => x.AggregateId.Equals(aggregateId)).ToListAsync();
+            T aggregate = new T();
+
+            // regenerate the current state of an aggregate and return the aggregate
+
+            var namespaceName = "PracticalEventSourcing.Domain.Events";
+            foreach (var @event in events)
+            {
+                Type eventType = Type.GetType($"{namespaceName}.{@event.EventType}, PracticalEventSourcing.Domain");
+                var ctor = eventType.GetConstructor(new[] { typeof(EventStore) });
+                var aggregateEvent = (IEvent)ctor.Invoke(new[] { @event });
+
+                aggregate.ApplyEvent(aggregateEvent);
+            }
+
+            return aggregate;
         }
     }
 }

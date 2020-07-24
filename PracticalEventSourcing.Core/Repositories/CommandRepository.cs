@@ -28,14 +28,14 @@ namespace PracticalEventSourcing.Core.Repositories
             return entity;
         }
 
-        public T Update(T entity)
+        public async Task<T> UpdateAsync(T entity)
         {
             if (entity == null)
             {
                 throw new ArgumentException("entity");
             }
             _context.Set<T>().Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
 

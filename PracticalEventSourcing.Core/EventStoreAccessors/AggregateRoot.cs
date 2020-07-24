@@ -49,6 +49,6 @@ namespace PracticalEventSourcing.Core.EventStoreAccessors
         /// Intended to be used for rehydration
         /// Should be overriden by aggregates
         /// </summary>
-        protected abstract void ApplyEvent(IEvent @event);
+        public abstract void ApplyEvent(IEvent @event);
     }
 }

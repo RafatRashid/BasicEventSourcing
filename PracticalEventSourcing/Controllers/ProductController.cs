@@ -38,7 +38,7 @@ namespace PracticalEventSourcing.Api.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]ProductDto product)
+        public async Task<IActionResult> Post([FromBody]NewProductDto product)
         {
             try
             {
@@ -47,6 +47,23 @@ namespace PracticalEventSourcing.Api.Controllers
                 return Ok(new { message = "Product created" });
             }
             catch(Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
+        [HttpPut]
+        [Route("changequantity")]
+        public async Task<IActionResult> Put([FromBody]ProductQuantityChangeDto product)
+        {
+            try
+            {
+                var changeQuantity = new ChangeProductQuantity(product.ProductId.Value, product.Quantity);
+                await _mediator.Send(changeQuantity);
+                return Ok(new { message = "Product quantity changed" });
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
