@@ -12,7 +12,7 @@ GO
   ) BEGIN CREATE TABLE [dbo].[Product] (
     [Id] [NVARCHAR] (255) NOT NULL,
     [Name] [NVARCHAR] (255) NOT NULL,
-    [AvailableQuantity] [NVARCHAR] (255) NOT NULL,
+    [AvailableQuantity] [INT] NOT NULL,
     CONSTRAINT PK_User PRIMARY KEY (Id)
   )
 END
@@ -30,6 +30,7 @@ GO
     [AggregateId] [NVARCHAR] (255) NOT NULL,
     [Payload] [NVARCHAR] (MAX) NULL,
     [Timestamp] [Datetime] NOT NULL,
+    [Version] [INT] NOT NULL,
     CONSTRAINT PK_EventStore PRIMARY KEY (Id)
   )
 END
