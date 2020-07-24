@@ -29,16 +29,6 @@ namespace PracticalEventSourcing
             services.AddControllers();
 
             var connString = Configuration.GetConnectionString("AppDbString");
-            //services.AddTransient<AppDbContext>(provider =>
-            //{
-            //    var options = provider.GetService<DbContextOptions<AppDbContext>>();
-
-
-            //    //var optionBuilder = new DbContextOptionsBuilder<AppDbContext>()
-            //    //.UseSqlServer(connString);
-
-            //    return new AppDbContext(options);
-            //});
             services.AddDbContext<AppDbContext>(op =>
             {
                 op.UseSqlServer(connString);
@@ -58,7 +48,7 @@ namespace PracticalEventSourcing
 
             services.AddSwaggerGen(sa =>
             {
-                sa.SwaggerDoc("v1", new OpenApiInfo { Title = "Auction API", Version = "v1" });
+                sa.SwaggerDoc("v1", new OpenApiInfo { Title = "ES api", Version = "v1" });
             });
         }
 
@@ -71,9 +61,10 @@ namespace PracticalEventSourcing
             }
 
             app.UseSwagger();
+
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ES");
                 c.RoutePrefix = string.Empty;
             });
 
