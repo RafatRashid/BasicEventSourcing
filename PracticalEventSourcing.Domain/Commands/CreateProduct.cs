@@ -8,20 +8,22 @@ using System.Threading.Tasks;
 
 namespace PracticalEventSourcing.Domain.Commands
 {
-    public class CreateProduct:IRequest<bool>
+    public class CreateProduct: BaseCommand, IRequest
     {
         public Guid ProductId { get; set; }
         public string ProductName { get; set; }
+        public int Quantity { get; set; }
 
-        public CreateProduct(Guid productId, string productName)
+        public CreateProduct(Guid productId, string productName, int quantity)
         {
             ProductId = productId;
             ProductName = productName ?? throw new ArgumentNullException(nameof(productName));
+            Quantity = quantity;
         }
     }
 
 
-    public class CreateProductHandler : ICommand, IRequestHandler<CreateProduct, bool>
+    public class CreateProductHandler : AsyncRequestHandler<CreateProduct>
     {
         IMediator _mediator;
         public CreateProductHandler(IMediator mediator)
@@ -29,16 +31,15 @@ namespace PracticalEventSourcing.Domain.Commands
             _mediator = mediator;
         }
 
-        public async Task<bool> Handle(CreateProduct command, CancellationToken cancellationToken)
+
+        protected override async Task Handle(CreateProduct command, CancellationToken cancellationToken)
         {
             // create a new aggregate from command parameters. the aggregate methods will queue necessary events
             var newProduct = new Product();
-            newProduct.Create(command.ProductId, command.ProductName, 10);
+            newProduct.Create(command.ProductId, command.ProductName, command.Quantity);
 
             // after preparing events, fire events for persistence and readmodel change
             await newProduct.DispatchEvents(_mediator);
-
-            return true;
         }
     }
 }

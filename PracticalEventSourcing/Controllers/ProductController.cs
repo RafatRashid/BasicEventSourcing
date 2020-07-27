@@ -42,7 +42,7 @@ namespace PracticalEventSourcing.Api.Controllers
         {
             try
             {
-                var createProduct = new CreateProduct(Guid.NewGuid(), product.ProductName);
+                var createProduct = new CreateProduct(Guid.NewGuid(), product.ProductName, product.Quantity);
                 await _mediator.Send(createProduct);
                 return Ok(new { message = "Product created" });
             }

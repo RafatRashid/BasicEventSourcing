@@ -4,7 +4,8 @@ using System.Text;
 
 namespace PracticalEventSourcing.Domain.Commands
 {
-    public interface ICommand
+    public class BaseCommand
     {
+        public Guid AggregateId { get; set; }
     }
 }

@@ -37,7 +37,7 @@ namespace PracticalEventSourcing
             services.AddMediatR(
                 typeof(Startup).GetTypeInfo().Assembly,
                 typeof(AggregateRoot).GetTypeInfo().Assembly,
-                typeof(ICommand).GetTypeInfo().Assembly
+                typeof(BaseCommand).GetTypeInfo().Assembly
             );
 
 

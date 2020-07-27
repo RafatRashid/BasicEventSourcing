@@ -8,6 +8,7 @@ namespace PracticalEventSourcing.Core
     {
         public DbSet<EventStore> EventStore { get; set; }
         public DbSet<ProductRM> Products { get; set; }
+        public DbSet<CartRM> Carts { get; set; }
 
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -18,6 +19,7 @@ namespace PracticalEventSourcing.Core
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new ProductRMMap());
+            modelBuilder.ApplyConfiguration(new CartRMMap());
         }
     }
 }

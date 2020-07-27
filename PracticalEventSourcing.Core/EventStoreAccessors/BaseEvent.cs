@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using PracticalEventSourcing.Core.EventStoreAccessors;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,21 @@ namespace PracticalEventSourcing.Domain.Events
         public string Payload { get; set; }
         public int Version { get; set; }
 
-        public AggregateRoot Aggregate { get; set; }
+        public dynamic DeserializedPayload { get; set; }
 
+        public BaseEvent()
+        {
+
+        }
+
+        public BaseEvent(EventStore @event)
+        {
+            EventId = @event.Id;
+            AggregateId = @event.AggregateId;
+            Version = @event.Version;
+            EventType = @event.EventType;
+
+            DeserializedPayload = JsonConvert.DeserializeObject(@event.Payload);
+        }
     }
 }

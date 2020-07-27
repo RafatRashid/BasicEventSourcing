@@ -15,22 +15,17 @@ namespace PracticalEventSourcing.Domain.Events
         public int AvailableQuantity { get; set; }
 
 
-        public ProductCreated(EventStore @event)
+        public ProductCreated(EventStore @event) : base(@event)
         {
-            EventId = @event.Id;
-            AggregateId = @event.AggregateId;
-            Version = @event.Version;
-            EventType = @event.EventType;
-
-            dynamic payload = JsonConvert.DeserializeObject(@event.Payload);
-            ProductName = (string)payload.ProductName;
-            AvailableQuantity = (int)payload.AvailableQuantity;
+            ProductName = (string)DeserializedPayload.ProductName;
+            AvailableQuantity = (int)DeserializedPayload.AvailableQuantity;
         }
         public ProductCreated(Guid productId, string productName, int availableQuantity)
         {
             EventId = Guid.NewGuid();
             EventType = typeof(ProductCreated).Name;
             AggregateId = productId;
+            
             ProductName = productName;
             AvailableQuantity = availableQuantity;
         }

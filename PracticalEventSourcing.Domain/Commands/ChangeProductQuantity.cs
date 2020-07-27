@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PracticalEventSourcing.Domain.Commands
 {
-    public class ChangeProductQuantity : ICommand, IRequest<bool>
+    public class ChangeProductQuantity : BaseCommand, IRequest
     {
         public Guid ProductId { get; set; }
         public int Quantity { get; set; }
@@ -22,7 +22,7 @@ namespace PracticalEventSourcing.Domain.Commands
     }
 
 
-    internal class ChangeProductQuantityHandler : IRequestHandler<ChangeProductQuantity, bool>
+    internal class ChangeProductQuantityHandler : AsyncRequestHandler<ChangeProductQuantity>
     {
         IEventRepository repository;
         IMediator _mediator;
@@ -32,7 +32,7 @@ namespace PracticalEventSourcing.Domain.Commands
             _mediator = mediator;
         }
 
-        public async Task<bool> Handle(ChangeProductQuantity request, CancellationToken cancellationToken)
+        protected override async Task Handle(ChangeProductQuantity request, CancellationToken cancellationToken)
         {
             var product = await repository.RehydrateAsync<Product>(request.ProductId);
             if (product == null || product.AggregateId == Guid.Empty)
@@ -40,7 +40,6 @@ namespace PracticalEventSourcing.Domain.Commands
 
             product.ChangeQuantity(request.Quantity);
             await product.DispatchEvents(_mediator);
-            return true;
         }
     }
 }

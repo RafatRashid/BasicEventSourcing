@@ -14,23 +14,15 @@ namespace PracticalEventSourcing.Domain.Events
     {
         public int ChangedQuantity { get; set; }
 
-        public ProductQuantityChanged(EventStore @event)
+        public ProductQuantityChanged(EventStore @event) : base(@event)
         {
-            EventId = @event.Id;
-            AggregateId = @event.AggregateId;
-            Version = @event.Version;
-            EventType = @event.EventType;
-
-            dynamic payload = JsonConvert.DeserializeObject(@event.Payload);
-            ChangedQuantity = (int)payload.ChangedQuantity;
+            ChangedQuantity = (int)DeserializedPayload.ChangedQuantity;
         }
         public ProductQuantityChanged(AggregateRoot aggregate, int quantity)
         {
             AggregateId = aggregate.AggregateId;
             ChangedQuantity = quantity;
             EventType = typeof(ProductQuantityChanged).Name;
-
-            Aggregate = aggregate;
         }
     }
 
