@@ -35,8 +35,10 @@ namespace PracticalEventSourcing.Domain.Commands
         public async Task<bool> Handle(ChangeProductQuantity request, CancellationToken cancellationToken)
         {
             var product = await repository.RehydrateAsync<Product>(request.ProductId);
-            product.ChangeQuantity(request.Quantity);
+            if (product == null || product.AggregateId == Guid.Empty)
+                throw new Exception("Product not found");
 
+            product.ChangeQuantity(request.Quantity);
             await product.DispatchEvents(_mediator);
             return true;
         }

@@ -10,5 +10,6 @@ namespace PracticalEventSourcing.Core.EventStoreAccessors
     {
         public Task PersistAsync(BaseEvent @event);
         public Task<T> RehydrateAsync<T>(Guid aggregateId) where T : AggregateRoot, new();
+        public Task SaveAsync();
     }
 }

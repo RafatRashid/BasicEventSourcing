@@ -66,6 +66,7 @@ namespace PracticalEventSourcing.Domain.Events
                     AvailableQuantity = @event.AvailableQuantity
                 };
                 await _repository.InsertAsync(newProduct);
+                await _repository.SaveAsync();
             }
             catch (Exception ex)
             {

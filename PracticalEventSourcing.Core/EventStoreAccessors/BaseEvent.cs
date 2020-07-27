@@ -14,5 +14,7 @@ namespace PracticalEventSourcing.Domain.Events
         public string Payload { get; set; }
         public int Version { get; set; }
 
+        public AggregateRoot Aggregate { get; set; }
+
     }
 }

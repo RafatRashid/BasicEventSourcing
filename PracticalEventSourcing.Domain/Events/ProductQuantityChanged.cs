@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using PracticalEventSourcing.Core.EventStoreAccessors;
 using PracticalEventSourcing.Core.ReadModels;
 using PracticalEventSourcing.Core.Repositories;
+using PracticalEventSourcing.Domain.Aggregates;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,11 +24,13 @@ namespace PracticalEventSourcing.Domain.Events
             dynamic payload = JsonConvert.DeserializeObject(@event.Payload);
             ChangedQuantity = (int)payload.ChangedQuantity;
         }
-        public ProductQuantityChanged(Guid aggregateId, int quantity)
+        public ProductQuantityChanged(AggregateRoot aggregate, int quantity)
         {
-            AggregateId = aggregateId;
+            AggregateId = aggregate.AggregateId;
             ChangedQuantity = quantity;
             EventType = typeof(ProductQuantityChanged).Name;
+
+            Aggregate = aggregate;
         }
     }
 
@@ -35,15 +38,13 @@ namespace PracticalEventSourcing.Domain.Events
     public class ProductQuantityChangedHandler : INotificationHandler<ProductQuantityChanged>
     {
         IEventRepository _eventRepository;
-        ICommandRepository<ProductRM> _repository;
-        private readonly IQueryRepository<ProductRM> queryRepository;
+        IProductRepository _repository;
 
         // should this handler be allowed to use queries???
-        public ProductQuantityChangedHandler(IEventRepository eventRepository, ICommandRepository<ProductRM> repository, IQueryRepository<ProductRM> queryRepository)
+        public ProductQuantityChangedHandler(IEventRepository eventRepository, IProductRepository repository)
         {
             _eventRepository = eventRepository;
             _repository = repository;
-            this.queryRepository = queryRepository;
         }
 
         public async Task Handle(ProductQuantityChanged @event, CancellationToken cancellationToken)
@@ -53,11 +54,8 @@ namespace PracticalEventSourcing.Domain.Events
                 @event.ChangedQuantity
             });
             await _eventRepository.PersistAsync(@event);
-
-            var existingProduct = await queryRepository.GetAsync(@event.AggregateId);
-            existingProduct.AvailableQuantity = @event.ChangedQuantity;
-
-            await _repository.UpdateAsync(existingProduct);
+            _repository.UpdateProductCount(@event.AggregateId, @event.ChangedQuantity);
+            await _repository.SaveAsync();
         }
     }
 }

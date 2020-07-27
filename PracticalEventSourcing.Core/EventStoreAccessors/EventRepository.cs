@@ -44,7 +44,6 @@ namespace PracticalEventSourcing.Core.EventStoreAccessors
                 };
 
                 await _context.EventStore.AddAsync(ev);
-                await _context.SaveChangesAsync();
             }
             catch(Exception ex)
             {
@@ -63,11 +62,10 @@ namespace PracticalEventSourcing.Core.EventStoreAccessors
         {
             // read events from the first event (or from a latest snapshot in a future update)
             var events = await _context.EventStore.Where(x => x.AggregateId.Equals(aggregateId)).ToListAsync();
-            T aggregate = new T();
-
+            
             // regenerate the current state of an aggregate and return the aggregate
-
             var namespaceName = "PracticalEventSourcing.Domain.Events";
+            T aggregate = new T();
             foreach (var @event in events)
             {
                 Type eventType = Type.GetType($"{namespaceName}.{@event.EventType}, PracticalEventSourcing.Domain");
@@ -78,6 +76,11 @@ namespace PracticalEventSourcing.Core.EventStoreAccessors
             }
 
             return aggregate;
+        }
+
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

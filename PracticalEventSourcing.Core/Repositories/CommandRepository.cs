@@ -23,19 +23,6 @@ namespace PracticalEventSourcing.Core.Repositories
                 throw new ArgumentException("entity");
             }
             await _context.Set<T>().AddAsync(entity);
-            await _context.SaveChangesAsync();
-
-            return entity;
-        }
-
-        public async Task<T> UpdateAsync(T entity)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentException("entity");
-            }
-            _context.Set<T>().Update(entity);
-            await _context.SaveChangesAsync();
             return entity;
         }
 
@@ -46,19 +33,17 @@ namespace PracticalEventSourcing.Core.Repositories
                 throw new ArgumentException("entity");
             }
             _context.Set<T>().Remove(entity);
-            _context.SaveChanges();
         }
 
         public void Delete(Guid id)
         {
             var set = _context.Set<T>();
             set.Remove(set.SingleOrDefault(x => x.Id == id));
-            _context.SaveChanges();
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }
