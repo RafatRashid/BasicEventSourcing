@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PracticalEventSourcing.Domain.Commands
 {
-    public class CreateProduct: BaseCommand, IRequest
+    public class CreateProduct: BaseCommand
     {
         public Guid ProductId { get; set; }
         public string ProductName { get; set; }

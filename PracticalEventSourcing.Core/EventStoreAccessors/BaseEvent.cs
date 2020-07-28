@@ -19,7 +19,8 @@ namespace PracticalEventSourcing.Domain.Events
 
         public BaseEvent()
         {
-
+            EventId = Guid.NewGuid();
+            EventType = GetType().Name;
         }
 
         public BaseEvent(EventStore @event)

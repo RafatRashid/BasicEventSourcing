@@ -18,7 +18,7 @@ namespace PracticalEventSourcing.Core.EventStoreAccessors
         /// <summary>
         /// Clear events from event queue
         /// </summary>
-        public void ClearEvents()
+        protected void ClearEvents()
         {
             Events.Clear();
         }
@@ -27,7 +27,7 @@ namespace PracticalEventSourcing.Core.EventStoreAccessors
         /// Add events to the event queue for processing with respect to current aggregate
         /// </summary>
         /// <param name="event"></param>
-        public void AddEvent(IEvent @event)
+        protected void AddEvent(IEvent @event)
         {
             Events.Enqueue(@event);
         }

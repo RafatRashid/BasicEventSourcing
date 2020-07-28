@@ -9,5 +9,6 @@ namespace PracticalEventSourcing.Core.Repositories
     public interface IProductRepository:ICommandRepository<ProductRM>
     {
         public void UpdateProductCount(Guid productId, int newQuantity);
+        public void DecrementProductCount(Guid productId);
     }
 }

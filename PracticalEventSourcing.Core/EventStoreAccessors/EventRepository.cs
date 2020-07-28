@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -61,7 +62,8 @@ namespace PracticalEventSourcing.Core.EventStoreAccessors
         public async Task<T> RehydrateAsync<T>(Guid aggregateId) where T : AggregateRoot, new()
         {
             // read events from the first event (or from a latest snapshot in a future update)
-            var events = await _context.EventStore.Where(x => x.AggregateId.Equals(aggregateId)).ToListAsync();
+            var events = await _context.EventStore.Where(x => x.AggregateId.Equals(aggregateId))
+                .OrderBy(x => x.Timestamp).ToListAsync();
             
             // regenerate the current state of an aggregate and return the aggregate
             var namespaceName = "PracticalEventSourcing.Domain.Events";

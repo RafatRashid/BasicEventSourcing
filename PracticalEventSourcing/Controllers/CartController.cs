@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PracticalEventSourcing.Core.Dto;
 using PracticalEventSourcing.Domain.Commands;
 
 namespace PracticalEventSourcing.Api.Controllers
@@ -27,6 +28,23 @@ namespace PracticalEventSourcing.Api.Controllers
                 var createCart = new CreateCart(Guid.NewGuid(), DateTime.Now);
                 await _mediator.Send(createCart);
                 return Ok(new { message = "New cart created" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
+        [HttpPatch]
+        [Route("addProduct")]
+        public async Task<IActionResult> AddProductToCart([FromBody]AddProductDto dto)
+        {
+            try
+            {
+                var addProduct = new AddProductToCart(dto.CartId, dto.ProductId, 1);
+                await _mediator.Send(addProduct);
+                return Ok(new { message = "Product added to cart" });
             }
             catch (Exception ex)
             {

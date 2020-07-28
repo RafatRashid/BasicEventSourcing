@@ -24,6 +24,7 @@ namespace PracticalEventSourcing.Domain.Aggregates
             AddEvent(quantityChanged);
         }
 
+
         public override void ApplyEvent(IEvent @event)
         {
             switch(@event)
@@ -35,7 +36,7 @@ namespace PracticalEventSourcing.Domain.Aggregates
                     break;
 
                 case ProductQuantityChanged c:
-                    this.AvailableQuatity = c.ChangedQuantity;
+                    this.AvailableQuatity += c.ChangedQuantity;
                     break;
             }
         }

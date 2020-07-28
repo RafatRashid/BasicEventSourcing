@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PracticalEventSourcing.Domain.Commands
 {
-    public class ChangeProductQuantity : BaseCommand, IRequest
+    public class ChangeProductQuantity : BaseCommand
     {
         public Guid ProductId { get; set; }
         public int Quantity { get; set; }
@@ -38,7 +38,8 @@ namespace PracticalEventSourcing.Domain.Commands
             if (product == null || product.AggregateId == Guid.Empty)
                 throw new Exception("Product not found");
 
-            product.ChangeQuantity(request.Quantity);
+            var newQuantity = product.AvailableQuatity + request.Quantity;
+            product.ChangeQuantity(newQuantity);
             await product.DispatchEvents(_mediator);
         }
     }

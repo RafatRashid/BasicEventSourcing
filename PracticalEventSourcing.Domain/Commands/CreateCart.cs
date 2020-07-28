@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PracticalEventSourcing.Domain.Commands
 {
-    public class CreateCart : BaseCommand, IRequest
+    public class CreateCart : BaseCommand
     {
         public DateTime CreatedAt { get; set; }
 

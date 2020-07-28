@@ -21,5 +21,11 @@ namespace PracticalEventSourcing.Core.Repositories
             var product = _context.Products.FirstOrDefault(x => x.Id.Equals(productId));
             product.AvailableQuantity = newQuantity;
         }
+
+        public void DecrementProductCount(Guid productId)
+        {
+            var product = _context.Products.FirstOrDefault(x => x.Id.Equals(productId));
+            product.AvailableQuantity--;
+        }
     }
 }

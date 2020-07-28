@@ -10,7 +10,12 @@ namespace PracticalEventSourcing.Domain.Aggregates
     {
         public DateTime CreatedAt { get; set; }
         public string ShippingEmail { get; set; }
-        public IEnumerable<Product> Products { get; set; }
+        public IList<Product> Products { get; set; }
+
+        public Cart()
+        {
+            Products = new List<Product>();
+        }
 
 
         public void CreateCart(Guid cartId, DateTime createdAt)
@@ -19,9 +24,10 @@ namespace PracticalEventSourcing.Domain.Aggregates
             AddEvent(ev);
         }
 
-        public void AddProduct()
+        public void AddProduct(Guid productId, int quantity)
         {
-            var ev = new ProductAddedToCart();
+            var ev = new ProductAddedToCart(AggregateId, productId, quantity);
+            AddEvent(ev);
         }
 
         public void RemoveProduct()
@@ -43,7 +49,17 @@ namespace PracticalEventSourcing.Domain.Aggregates
 
         public override void ApplyEvent(IEvent @event)
         {
-            throw new NotImplementedException();
+            switch(@event)
+            {
+                case CartCreated c:
+                    this.AggregateId = c.AggregateId;
+                    this.CreatedAt = c.CreatedAt;
+                    break;
+                
+                case ProductAddedToCart p:
+                    this.Products.Add(new Product { AggregateId = p.ProductId });
+                    break;
+            }
         }
     }
 }
