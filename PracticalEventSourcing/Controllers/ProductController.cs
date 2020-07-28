@@ -53,7 +53,7 @@ namespace PracticalEventSourcing.Api.Controllers
         }
 
 
-        [HttpPut]
+        [HttpPatch]
         [Route("AddQuantity")]
         public async Task<IActionResult> Put([FromBody]ProductAddQuantityDto product)
         {

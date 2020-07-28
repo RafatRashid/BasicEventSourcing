@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PracticalEventSourcing.Core.Dto;
 using PracticalEventSourcing.Domain.Commands;
+using PracticalEventSourcing.Domain.Queries;
 
 namespace PracticalEventSourcing.Api.Controllers
 {
@@ -19,6 +20,41 @@ namespace PracticalEventSourcing.Api.Controllers
         {
             _mediator = mediator;
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var getCarts = new GetAllCarts();
+                var carts = await _mediator.Send(getCarts);
+                return Ok(new { carts });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
+        [HttpGet]
+        [Route("cartInvoice")]
+        public async Task<IActionResult> GetCartInvoice([FromQuery]Guid cartId)
+        {
+            try
+            {
+                var getInvoice = new GetCartInvoice(cartId);
+                var invoice = await _mediator.Send(getInvoice);
+                return Ok(new { invoice });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> Post()
@@ -68,5 +104,9 @@ namespace PracticalEventSourcing.Api.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+
+        
+
     }
 }
