@@ -54,14 +54,14 @@ namespace PracticalEventSourcing.Api.Controllers
 
 
         [HttpPut]
-        [Route("changequantity")]
-        public async Task<IActionResult> Put([FromBody]ProductQuantityChangeDto product)
+        [Route("AddQuantity")]
+        public async Task<IActionResult> Put([FromBody]ProductAddQuantityDto product)
         {
             try
             {
-                var changeQuantity = new ChangeProductQuantity(product.ProductId.Value, product.Quantity);
-                await _mediator.Send(changeQuantity);
-                return Ok(new { message = "Product quantity changed" });
+                var addQuantity = new AddProductQuantity(product.ProductId.Value, product.AddedQuantity);
+                await _mediator.Send(addQuantity);
+                return Ok(new { message = "Product quantity added" });
             }
             catch (Exception ex)
             {

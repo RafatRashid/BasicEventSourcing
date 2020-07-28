@@ -10,43 +10,43 @@ using System.Threading.Tasks;
 
 namespace PracticalEventSourcing.Domain.Events
 {
-    public class ProductQuantityChanged: BaseEvent
+    public class ProductQuantityAdded: BaseEvent
     {
-        public int ChangedQuantity { get; set; }
+        public int AddedQuantity { get; set; }
 
-        public ProductQuantityChanged(EventStore @event) : base(@event)
+        public ProductQuantityAdded(EventStore @event) : base(@event)
         {
-            ChangedQuantity = (int)DeserializedPayload.ChangedQuantity;
+            AddedQuantity = (int)DeserializedPayload.AddedQuantity;
         }
-        public ProductQuantityChanged(AggregateRoot aggregate, int quantity)
+        public ProductQuantityAdded(AggregateRoot aggregate, int addedQuantity)
         {
             AggregateId = aggregate.AggregateId;
-            ChangedQuantity = quantity;
-            EventType = typeof(ProductQuantityChanged).Name;
+            AddedQuantity = addedQuantity;
+            EventType = typeof(ProductQuantityAdded).Name;
         }
     }
 
 
-    public class ProductQuantityChangedHandler : INotificationHandler<ProductQuantityChanged>
+    public class ProductQuantityAddedHandler : INotificationHandler<ProductQuantityAdded>
     {
         IEventRepository _eventRepository;
         IProductRepository _repository;
 
         // should this handler be allowed to use queries???
-        public ProductQuantityChangedHandler(IEventRepository eventRepository, IProductRepository repository)
+        public ProductQuantityAddedHandler(IEventRepository eventRepository, IProductRepository repository)
         {
             _eventRepository = eventRepository;
             _repository = repository;
         }
 
-        public async Task Handle(ProductQuantityChanged @event, CancellationToken cancellationToken)
+        public async Task Handle(ProductQuantityAdded @event, CancellationToken cancellationToken)
         {
             @event.Payload = JsonConvert.SerializeObject(new
             {
-                @event.ChangedQuantity
+                @event.AddedQuantity
             });
             await _eventRepository.PersistAsync(@event);
-            _repository.UpdateProductCount(@event.AggregateId, @event.ChangedQuantity);
+            _repository.UpdateProductCount(@event.AggregateId, @event.AddedQuantity);
             await _repository.SaveAsync();
         }
     }

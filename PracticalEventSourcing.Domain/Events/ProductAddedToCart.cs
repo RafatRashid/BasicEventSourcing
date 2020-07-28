@@ -33,12 +33,10 @@ namespace PracticalEventSourcing.Domain.Events
     {
         IEventRepository _eventRepository;
         ICommandRepository<CartItemRM> _repository;
-        IProductRepository _productRepository;
-        public ProductAddedToCartHandler(IEventRepository eventRepo, ICommandRepository<CartItemRM> repository, IProductRepository productRepository)
+        public ProductAddedToCartHandler(IEventRepository eventRepo, ICommandRepository<CartItemRM> repository)
         {
             _eventRepository = eventRepo;
             _repository = repository;
-            _productRepository = productRepository;
         }
 
 
@@ -47,7 +45,7 @@ namespace PracticalEventSourcing.Domain.Events
             @event.Payload = JsonConvert.SerializeObject(new
             {
                 @event.ProductId,
-                Quantity = 1
+                Quantity = @event.Quantity
             });
 
             await _repository.InsertAsync(new CartItemRM
@@ -56,7 +54,7 @@ namespace PracticalEventSourcing.Domain.Events
                 ProductId = @event.ProductId,
                 Quantity = @event.Quantity
             });
-            _productRepository.DecrementProductCount(@event.ProductId);
+            
             await _eventRepository.PersistAsync(@event);
             await _eventRepository.SaveAsync();
         }

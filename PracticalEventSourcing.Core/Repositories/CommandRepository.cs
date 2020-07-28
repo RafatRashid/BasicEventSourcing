@@ -8,8 +8,7 @@ namespace PracticalEventSourcing.Core.Repositories
 {
     public class CommandRepository<T> : ICommandRepository<T> where T : BaseEntity
     {
-        private readonly AppDbContext _context;
-
+        protected readonly AppDbContext _context;
         public CommandRepository(AppDbContext context)
         {
             _context = context;

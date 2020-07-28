@@ -38,13 +38,30 @@ namespace PracticalEventSourcing.Api.Controllers
 
         [HttpPatch]
         [Route("addProduct")]
-        public async Task<IActionResult> AddProductToCart([FromBody]AddProductDto dto)
+        public async Task<IActionResult> AddProductToCart([FromBody]ModifyCartProductDto dto)
         {
             try
             {
                 var addProduct = new AddProductToCart(dto.CartId, dto.ProductId, 1);
                 await _mediator.Send(addProduct);
                 return Ok(new { message = "Product added to cart" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
+        [HttpPatch]
+        [Route("removeProduct")]
+        public async Task<IActionResult> RemoveProductToCart([FromBody]ModifyCartProductDto dto)
+        {
+            try
+            {
+                var addProduct = new RemoveProductFromCart(dto.CartId, dto.ProductId, 1);
+                await _mediator.Send(addProduct);
+                return Ok(new { message = "Product removed from cart" });
             }
             catch (Exception ex)
             {

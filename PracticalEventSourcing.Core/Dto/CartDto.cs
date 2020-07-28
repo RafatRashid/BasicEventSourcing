@@ -8,7 +8,7 @@ namespace PracticalEventSourcing.Core.Dto
     {
     }
 
-    public class AddProductDto
+    public class ModifyCartProductDto
     {
         public Guid ProductId { get; set; }
         public Guid CartId { get; set; }

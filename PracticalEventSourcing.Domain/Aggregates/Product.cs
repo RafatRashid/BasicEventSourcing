@@ -18,9 +18,9 @@ namespace PracticalEventSourcing.Domain.Aggregates
             AddEvent(productCreated);
         }
 
-        internal void ChangeQuantity(int quantity)
+        internal void AddQuantity(int addedQuantity)
         {
-            var quantityChanged = new ProductQuantityChanged(this, quantity);
+            var quantityChanged = new ProductQuantityAdded(this, addedQuantity);
             AddEvent(quantityChanged);
         }
 
@@ -35,8 +35,8 @@ namespace PracticalEventSourcing.Domain.Aggregates
                     this.AvailableQuatity = p.AvailableQuantity;
                     break;
 
-                case ProductQuantityChanged c:
-                    this.AvailableQuatity += c.ChangedQuantity;
+                case ProductQuantityAdded c:
+                    this.AvailableQuatity += c.AddedQuantity;
                     break;
             }
         }

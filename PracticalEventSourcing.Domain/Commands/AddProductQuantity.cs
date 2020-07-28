@@ -9,37 +9,36 @@ using System.Threading.Tasks;
 
 namespace PracticalEventSourcing.Domain.Commands
 {
-    public class ChangeProductQuantity : BaseCommand
+    public class AddProductQuantity : BaseCommand
     {
         public Guid ProductId { get; set; }
-        public int Quantity { get; set; }
+        public int AddedQuantity { get; set; }
 
-        public ChangeProductQuantity(Guid productId, int quantity)
+        public AddProductQuantity(Guid productId, int addedQuantity)
         {
             ProductId = productId;
-            Quantity = quantity;
+            AddedQuantity = addedQuantity;
         }
     }
 
 
-    internal class ChangeProductQuantityHandler : AsyncRequestHandler<ChangeProductQuantity>
+    internal class AddProductQuantityHandler : AsyncRequestHandler<AddProductQuantity>
     {
         IEventRepository repository;
         IMediator _mediator;
-        public ChangeProductQuantityHandler(IEventRepository repository, IMediator mediator)
+        public AddProductQuantityHandler(IEventRepository repository, IMediator mediator)
         {
             this.repository = repository;
             _mediator = mediator;
         }
 
-        protected override async Task Handle(ChangeProductQuantity request, CancellationToken cancellationToken)
+        protected override async Task Handle(AddProductQuantity request, CancellationToken cancellationToken)
         {
             var product = await repository.RehydrateAsync<Product>(request.ProductId);
             if (product == null || product.AggregateId == Guid.Empty)
                 throw new Exception("Product not found");
 
-            var newQuantity = product.AvailableQuatity + request.Quantity;
-            product.ChangeQuantity(newQuantity);
+            product.AddQuantity(request.AddedQuantity);
             await product.DispatchEvents(_mediator);
         }
     }

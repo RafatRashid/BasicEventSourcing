@@ -52,6 +52,8 @@ namespace PracticalEventSourcing.Domain.Events
 
             var cart = new CartRM();
             cart.CreatedAt = @event.CreatedAt;
+            cart.Id = @event.AggregateId;
+
             await _repository.InsertAsync(cart);
             await _repository.SaveAsync();
         }

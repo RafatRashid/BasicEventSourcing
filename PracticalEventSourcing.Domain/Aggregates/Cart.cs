@@ -2,6 +2,7 @@
 using PracticalEventSourcing.Domain.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace PracticalEventSourcing.Domain.Aggregates
@@ -30,19 +31,10 @@ namespace PracticalEventSourcing.Domain.Aggregates
             AddEvent(ev);
         }
 
-        public void RemoveProduct()
+        public void RemoveProduct(Guid productId, int quantity)
         {
-            var ev = new ProductRemovedFromCart();
-        }
-
-        public void ChangeProductQuantity()
-        {
-            var ev = new CartProductQuantityChanged();
-        }
-
-        public void AddShippingEmail()
-        {
-            var ev = new ShippingEmailAddedToCart();
+            var ev = new ProductRemovedFromCart(AggregateId, productId, quantity);
+            AddEvent(ev);
         }
 
 
@@ -58,6 +50,11 @@ namespace PracticalEventSourcing.Domain.Aggregates
                 
                 case ProductAddedToCart p:
                     this.Products.Add(new Product { AggregateId = p.ProductId });
+                    break;
+
+                case ProductRemovedFromCart p:
+                    var removedProduct = this.Products.FirstOrDefault(x => x.AggregateId.Equals(p.ProductId));
+                    this.Products.Remove(removedProduct);
                     break;
             }
         }

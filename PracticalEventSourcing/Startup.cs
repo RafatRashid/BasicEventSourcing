@@ -45,6 +45,7 @@ namespace PracticalEventSourcing
             services.AddTransient(typeof(IEventRepository), typeof(EventRepository));
             services.AddTransient(typeof(ICommandRepository<>), typeof(CommandRepository<>));
             services.AddTransient(typeof(IProductRepository), typeof(ProductRepository));
+            services.AddTransient(typeof(ICartRepository), typeof(CartRepository));
 
 
             services.AddSwaggerGen(sa =>

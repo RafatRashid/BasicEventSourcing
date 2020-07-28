@@ -2,12 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PracticalEventSourcing.Core.Repositories
 {
-    public interface IProductRepository:ICommandRepository<ProductRM>
+    public interface ICartRepository: ICommandRepository<CartRM>
     {
-        public void UpdateProductCount(Guid productId, int newQuantity);
+        public void DeleteCartItem(Guid cartId, Guid productId);
     }
 }
